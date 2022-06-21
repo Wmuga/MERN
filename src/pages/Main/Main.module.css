@@ -1,0 +1,10 @@
+.spread{
+  display: flex;
+  justify-content: space-evenly;
+  flex-grow: 0;
+}
+
+.spread > *{
+  width: max-content;
+  padding: 10px 15px;
+}

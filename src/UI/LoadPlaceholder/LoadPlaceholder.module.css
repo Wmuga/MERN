@@ -1,0 +1,19 @@
+.Load{
+  width: 100px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  animation: load 1s linear infinite;
+  border: 3px dashed var(--load-circle-color);
+}
+
+@keyframes load{
+  0%{
+    transform: rotate(0) scale(1);
+  }
+  50%{
+    transform: rotate(180deg) scale(1.2);
+  }
+  100%{
+    transform: rotate(360deg) scale(1);
+  }
+}

@@ -1,0 +1,17 @@
+form{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 15em;
+}
+
+input,label,a{
+  font-size: 14pt;
+  text-align: center;
+}
+
+a, input[type="button"]{
+  width: 100%;
+  margin-top: 15px;
+}

@@ -1,0 +1,40 @@
+.hidden_container{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-width: 5em;
+}
+
+
+.hidden{
+  position: absolute;
+  top:1.7em;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: var(--header-background-color);
+  border: 0.12em solid var(--drop-down-color);
+  border-top: none;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.2s;
+  z-index: 100;
+}
+
+.hidden_container > span{
+  color: var(--href-color);
+}
+
+.hidden_container:hover > .hidden,
+.hidden:hover
+.hidden:focus-within{
+  transform: scaleY(1);
+}
+
+.hidden > *{
+  text-align: center;
+  padding-bottom: 0.2em;
+}

@@ -1,38 +1,65 @@
-.App {
-  text-align: center;
+:root{
+  --grey: #474242;
+  --light-grey: #908a8a;
+  --white: #f6efef;
+  --red: #881414;
+  --green: #3ee24b;
+  --light-blue: #2ebdddce;
+  --blue: #1b48c4ce;
+
+  --header-background-color: var(--grey);
+  --href-color: var(--white);
+  --button-like-background-color: var(--blue);
+  --load-circle-color: var(--blue);
+  --drop-down-color: var(--light-grey);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.App-header{
+  background-color: var(--header-background-color);
+  font-size: 16pt;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.App-header > nav{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.App-header > nav > *{
+  margin-inline: 10px;
+  height: 100%;
+}
+
+.header_href_deco{
+  color: var(--href-color);
+  text-decoration: none;
+}
+
+main{
+  position: relative;
+  border: 0.1em solid var(--dark);
+  width: 90%;
+  height: max-content;
+  margin-top: 1em;
+  margin-left: 5%;
+  padding: 1em;
+  font-size: 16pt;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.button_like{
+  padding: 0.2em;
+  background-color: var(--button-like-background-color);
+  color: var(--href-color);
+  border-radius: 0.3vw;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.button_like:hover{
+  background-color: var(--light-blue);
 }
