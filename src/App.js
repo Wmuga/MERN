@@ -9,6 +9,7 @@ import {Auth, AuthContext, AuthContextProvider} from './utils/Auth';
 import Vacancies from './pages/Vacancies/List/Vacancies';
 import Resumes from './pages/Resumes/Resumes';
 import VacancyEdit from './pages/Vacancies/Edit/VacancyEdit';
+import Vacancy from './pages/Vacancies/Vacancy/Vacancy';
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
             <Route path="/login" element={<Login/>} />
             <Route path="/logout" element={<Logout/>} />
             <Route path="/vacancy" element={<Vacancies/>} />
+            <Route path="/vacancy/:vacancyId" element={<Vacancy/>} />
             <Route path="/vacancy/:vacancyId/edit" element={<VacancyEdit/>} />
             <Route path="/resume" element={<Resumes/>} />
           </Routes>

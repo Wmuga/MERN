@@ -1,8 +1,27 @@
 import axios from "axios";
+import { fetch_user } from "./users";
 
 export function fetch_vacancy(id, callback){
   axios.get(`https://jsonplaceholder.typicode.com/posts/${id}`).then((value)=>{
     callback(value.data)
+  })
+}
+
+export function fetch_full_vacancy(id, callback){
+  axios.get(`https://jsonplaceholder.typicode.com/posts/${id}`).then((postValue)=>{
+    if (!postValue.data || !Object.keys(postValue.data).length){
+      callback({})
+      return
+    }
+
+    if(typeof(postValue.data.userId)=='undefined'){
+      callback({...postValue.data})
+      return
+    }
+
+    fetch_user(postValue.data.userId,(user)=>{
+      callback({...postValue.data,user:user})
+    })
   })
 }
 

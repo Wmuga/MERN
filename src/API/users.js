@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export function fetch_user(id, callback){
-  axios.get(`https://jsonplaceholder.typicode.com/users?id=${id}`).then((value)=>{
-    callback(value.data.length? value.data[0] : {})
+  axios.get(`https://jsonplaceholder.typicode.com/users/${id}`).then((value)=>{
+    callback(value.data)
   })
 }
 
