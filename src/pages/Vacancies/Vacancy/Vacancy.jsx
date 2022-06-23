@@ -45,7 +45,6 @@ const Vacancy = () =>{
       </AccessController>
 
       <div>
-        {/* {JSON.stringify(vacancy?.data?.user)} */}
         <span>{vacancy?.data?.user?.username}</span>
       </div>
       <div>{vacancy?.data?.body}</div>
