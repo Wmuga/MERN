@@ -4,6 +4,7 @@ import DropDown from './UI/DropDown/DropDown';
 import Main from './pages/Main/Main';
 import Profile from './pages/Profile/Profile';
 import Login from './pages/Login/Login';
+import Signin from './pages/Signin/Signin';
 import Logout from './pages/Logout';
 import {Auth, AuthContext, AuthContextProvider} from './utils/Auth';
 import Vacancies from './pages/Vacancies/List/Vacancies';
@@ -37,7 +38,7 @@ function App() {
                   ({user})=>{
                     return(user?.username?.length
                     ? <DropDown name={user?.username}>
-                        <Link className="header_href_deco" to="/profile/0">Профиль</Link>
+                        <Link className="header_href_deco" to={`/profile/${user.userId}`}>Профиль</Link>
                         <Link className="header_href_deco" to="/logout">Выйти</Link>
                       </DropDown>
                     : <Link className='header_href_deco' to="/login">Войти</Link>
@@ -51,6 +52,7 @@ function App() {
             <Route index element={<Main/>}/>
             <Route path="/profile/:userId" element={<Profile/>} />
             <Route path="/login" element={<Login/>} />
+            <Route path="/signin" element={<Signin/>} />
             <Route path="/logout" element={<Logout/>} />
             <Route path="/vacancy" element={<Vacancies/>} />
             <Route path="/vacancy/:vacancyId" element={<Vacancy/>} />
