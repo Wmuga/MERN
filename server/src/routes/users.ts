@@ -119,17 +119,16 @@ const route_users = async(app:Application)=>{
   //Get user session
   app.get('/session',(req,res)=>{
     //check for header
-    if (!req.headers.authorization || !sessionUserStorage.checkAuth(req.headers.authorization)){
+    if (!req.headers.authorization){
       res.status(403).end()
       return
     }
-    // Note: handle no session
     res.end(JSON.stringify(sessionUserStorage.getUser(req.headers.authorization)??{}))
   })
   // Login user
   app.post('/login',bodyParser.json(),(req,res)=>{
     //check for header
-    if (!req.headers.authorization || !sessionUserStorage.checkAuth(req.headers.authorization)){
+    if (!req.headers.authorization){
       res.status(403).end()
       return
     }
@@ -140,7 +139,7 @@ const route_users = async(app:Application)=>{
   })
   app.post('/logout',(req,res)=>{
     //check for header
-    if (!req.headers.authorization || !sessionUserStorage.checkAuth(req.headers.authorization)){
+    if (!req.headers.authorization){
       res.status(403).end()
       return
     }
@@ -150,7 +149,7 @@ const route_users = async(app:Application)=>{
   // Signin user
   app.post('/signin',bodyParser.json(),(req,res)=>{
     //check for header
-    if (!req.headers.authorization || !sessionUserStorage.checkAuth(req.headers.authorization)){
+    if (!req.headers.authorization){
       res.status(403).end()
       return
     }
@@ -179,7 +178,7 @@ const route_users = async(app:Application)=>{
   //Delete user
   app.delete('/users/:userId',(req,res)=>{
     //check for header
-    if (!req.headers.authorization){
+    if (!req.headers.authorization || !sessionUserStorage.checkAuth(req.headers.authorization)){
       res.status(403).end()
       return
     }
@@ -196,7 +195,7 @@ const route_users = async(app:Application)=>{
   //Update pfp
   app.post('/users/:userId/pfp',upload.single('file'),(req,res)=>{
     //check for header
-    if (!req.headers.authorization){
+    if (!req.headers.authorization || !sessionUserStorage.checkAuth(req.headers.authorization)){
       res.status(403).end()
       return
     }

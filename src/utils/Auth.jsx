@@ -2,6 +2,7 @@ import { useCookies } from 'react-cookie';
 import { createContext,  useState } from 'react';
 import { get_session } from '../API/users';
 import { randstr } from './utils';
+import LoadPlaceholder from '../UI/LoadPlaceholder/LoadPlaceholder';
 
 export let AuthCookie = ''
 
@@ -35,9 +36,11 @@ export function AuthContextProvider({children}){
   }
 
   return(
+    user?
     <AuthContext.Provider value={{user,setUser}}>
       {children}
     </AuthContext.Provider>
+    : <LoadPlaceholder/>
   )
 }
 

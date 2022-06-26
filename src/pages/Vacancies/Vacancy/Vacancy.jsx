@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { delete_vacancy, fetch_full_vacancy } from '../../../API/vacancies'
+import { delete_vacancy, fetch_vacancy } from '../../../API/vacancies'
 import LoadPlaceholder from '../../../UI/LoadPlaceholder/LoadPlaceholder'
 import { AccessController } from '../../../utils/AccessControllet'
 import { AuthContext } from '../../../utils/Auth'
@@ -15,7 +15,7 @@ const Vacancy = () =>{
   })
 
   if(vacancy.load){
-    fetch_full_vacancy(vacancyId,(data)=>{
+    fetch_vacancy(vacancyId,(data)=>{
       setVacancy({...vacancy,load:false,data})
     })
   }

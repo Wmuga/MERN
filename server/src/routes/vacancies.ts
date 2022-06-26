@@ -16,7 +16,7 @@ type vacancyType = {
 const vacancyShema: Schema = new Schema({
   title: String,
   body: String,
-  author: [{ type: Schema.Types.ObjectId, ref: 'users' }],
+  author: { type: Schema.Types.ObjectId, ref: 'users' }
 })
 
 const vacancyModel = model('vacancies',vacancyShema)
@@ -51,13 +51,19 @@ async function get_vacancy(_id:string,callback:(user:vacancyType|undefined)=>any
 async function find_vacancy(body:string,limit:number,page:number,callback:(vacancies:vacancyType[]|[])=>any){
   let skip = limit*(page-1)
   let res = skip>0 
-  ? await vacancyModel.find({body:new RegExp(`*${body}*`,'i')}).populate('author').exec()
-  : await vacancyModel.find({body:new RegExp(`*${body}*`,'i')},null,{skip,limit}).populate('author').exec()
+  ? await vacancyModel.find({body:new RegExp(`${body}`,'i')}).populate('author').exec()
+  : await vacancyModel.find({body:new RegExp(`${body}`,'i')},null,{skip,limit}).populate('author').exec()
   if (res.length){
     callback(res.map(e=>documentToVacancy(e)))
     return
   }
   callback([])
+}
+
+function count_vacancies(callback:(count:Number)=>any){
+  vacancyModel.count({},function(_,count){
+    callback(count)
+  })
 }
 
 async function create_vacancy(title:string,body:string,authorId:string,callback:(added:boolean)=>any){
@@ -85,13 +91,30 @@ function delete_vacancy(_id:string,callback:(deleted:Boolean)=>any){
 
 
 const route_vacancies = async(app:Application)=>{
+  // Vacancies
+  app.get('/vacancies/',(req,res)=>{
+
+    let max = Number(req.query["_limit"])
+    let page = Number(req.query["_page"])
+    let query = req.query["query"]?.toString()??""
+
+    max = max>0 ? max : 0
+    page = page>0 ? page : 1
+
+
+    find_vacancy(query,max,page,(user)=>{
+      res.end(JSON.stringify(user))
+    })
+  })
+   // Vacancies count
+   app.get('/vacancies/count',(req,res)=>{
+
+    count_vacancies((count)=>{
+      res.end(count.toString())
+    })
+  })
   // Vacancy
   app.get('/vacancies/:vacancyId',(req,res)=>{
-    //check for header
-    if (!req.headers.authorization || !sessionUserStorage.checkAuth(req.headers.authorization)){
-      res.status(403).end()
-      return
-    }
 
     let {vacancyId} = req.params
     if (vacancyId.length<12) {
@@ -103,6 +126,25 @@ const route_vacancies = async(app:Application)=>{
       res.end(JSON.stringify(user))
     })
   })
+  // Edit
+  app.put('/vacancies/:vacancyId',(req,res)=>{
+
+    let {vacancyId} = req.params
+    if (vacancyId.length<12) {
+      res.status(404).end()
+      return
+    }
+
+    if (!req.headers.authorization || !sessionUserStorage.checkAuth(req.headers.authorization)){
+      res.status(403).end()
+      return
+    }
+    
+    get_vacancy(vacancyId,(user)=>{
+      res.end(JSON.stringify(user))
+    })
+  })
+
   // Create vacancy
   app.post('/vacancies/create',bodyParser.json(),(req,res)=>{
     //check for header
@@ -115,7 +157,8 @@ const route_vacancies = async(app:Application)=>{
       res.status(added?204:500).end()
     })
   })
-  //Delete user
+
+  //Delete vacancy
   app.delete('/vacancies/:vacancyId',(req,res)=>{
     //check for header
     if (!req.headers.authorization || !sessionUserStorage.checkAuth(req.headers.authorization)){

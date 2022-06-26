@@ -47,6 +47,7 @@ const Vacancies = () =>{
   if(loads.cur_page){
     fetch_vacancies_page(pages.cur_page,page_size,(page)=>{
       setPage(page)
+      console.log(page)
       setLoads({...loads,cur_page:false})
     })
   }
@@ -61,16 +62,16 @@ const Vacancies = () =>{
         {
           loads.cur_page
           ? <LoadPlaceholder/>
-          : vacancies.map(value=>{
-            return <div key={value.id}>
-              <Link style={{textDecoration:'none', color:'black'}} to={`/vacancy/${value.id}`}>
-              <h3>{value.id}. {value.title}</h3>
+          : vacancies.map((value,index)=>{
+            return <div key={value._id}>
+              <Link style={{textDecoration:'none', color:'black'}} to={`/vacancy/${value._id}`}>
+              <h3>{index+(pages.cur_page-1)*page_size+1}. {value.title}</h3>
               </Link>
               <AccessController accessProvider={()=>user.level>=2}>
-                <button onClick={()=>{deletePost(value.id)}}>delete</button>
+                <button onClick={()=>{deletePost(value._id)}}>delete</button>
               </AccessController>
               <AccessController accessProvider={()=>  user.level>=1}>
-                <Link to={`/vacancy/${value.id}/edit`}>
+                <Link to={`/vacancy/${value._id}/edit`}>
                   <button>Edit</button>
                 </Link>
               </AccessController>
