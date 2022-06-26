@@ -31,8 +31,8 @@ const Vacancies = () =>{
 
   function deletePost(id){
     delete_vacancy(id,(status)=>{
-      if (status===200){
-        setPage(vacancies.filter((el)=>el.id!==id))
+      if (status===204){
+        setPage(vacancies.filter((el)=>el._id!==id))
       }
     })
   }
@@ -57,7 +57,7 @@ const Vacancies = () =>{
     loads.pages_count
     ? <LoadPlaceholder/>
     : !pages.total_pages?
-    <h2>Ошибка на серваке</h2>
+    <h2>По версии сервера тут пусто</h2>
     : <div className='Vacancies'>
         {
           loads.cur_page

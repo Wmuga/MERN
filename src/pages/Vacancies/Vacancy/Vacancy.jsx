@@ -22,7 +22,7 @@ const Vacancy = () =>{
 
   function deletePost(id){
     delete_vacancy(id,(status)=>{
-      if (status===200){
+      if (status===204){
         window.location.replace('/vacancy')
       }
     })
@@ -36,10 +36,10 @@ const Vacancy = () =>{
       <h2>{vacancy?.data?.title}</h2>
 
       <AccessController accessProvider={()=>user?.level>=2}>
-        <button onClick={()=>{deletePost(vacancy?.data?.id)}}>delete</button>
+        <button onClick={()=>{deletePost(vacancy?.data?._id)}}>delete</button>
       </AccessController>
       <AccessController accessProvider={()=>  user.level>=1}>
-        <Link to={`/vacancy/${vacancy?.data?.id}/edit`}>
+        <Link to={`/vacancy/${vacancy?.data?._id}/edit`}>
           <button>Edit</button>
         </Link>
       </AccessController>
@@ -47,7 +47,7 @@ const Vacancy = () =>{
       <div>
         <span>{vacancy?.data?.user?.username}</span>
       </div>
-      <div>{vacancy?.data?.body}</div>
+      <div dangerouslySetInnerHTML={{__html:vacancy?.data?.body}}></div>
     </div>
   )
 }

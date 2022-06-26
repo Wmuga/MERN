@@ -51,7 +51,7 @@ export function create_vacancy(vacancy, callback){
 }
 
 export function edit_vacancy(vacancy, callback){
-  axios.put(`${options.APIserver}/vacancies/${vacancy.id}`,vacancy,{
+  axios.put(`${options.APIserver}/vacancies/${vacancy._id}`,vacancy,{
     headers:{'Authorization':AuthCookie}
   }).then((value)=>{
     callback(value.status)

@@ -1,5 +1,4 @@
-import mongoose, {Schema, model} from "mongoose"
-import app_options from '../app_options.json'
+import {Schema, model} from "mongoose"
 import {Application} from 'express'
 import bodyParser from "body-parser"
 import { sessionUserStorage, userType } from "../utils/session"
@@ -167,6 +166,7 @@ const route_vacancies = async(app:Application)=>{
     }
 
     let {vacancyId} = req.params
+    
     if (vacancyId.length<12) {
       res.status(404).end()
       return

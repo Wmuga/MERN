@@ -1,4 +1,4 @@
-import mongoose, {Schema, model} from "mongoose"
+import {Schema, model} from "mongoose"
 import app_options from '../app_options.json'
 import {createHmac} from "crypto"
 import {Application} from 'express'
@@ -10,9 +10,6 @@ import path from 'path'
 import fs from 'fs'
 //Папка загрузки
 const upload = multer({dest:"tmp/"})
-
-
-mongoose.connect(app_options.db_url)
 
 
 const userSchema: Schema = new Schema({

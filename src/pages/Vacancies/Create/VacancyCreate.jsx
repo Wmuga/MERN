@@ -18,6 +18,7 @@ const VacancyCreate = () =>{
 
 
   function create(){
+    if(!vacancy.data.title.length && !vacancy.data.body) return
     create_vacancy(vacancy.data,(status)=>{
       console.log(status)
       if (status===204) setVacancy({...vacancy,created:true})
@@ -31,7 +32,7 @@ const VacancyCreate = () =>{
     <div>
       <AccessControllerRedirect redirect='/login' accessProvider={()=>{return typeof(user?.level)!='undefined'}}/>
       Заголовок:<br/>
-      <input name="title" value={vacancy?.data?.title} onChange={(e)=>{setVacancy({...vacancy,data:{...vacancy.data,title:e.target.value}})}}/><br/>
+      <input name="title" value={vacancy.data.title} onChange={(e)=>{setVacancy({...vacancy,data:{...vacancy.data,title:e.target.value}})}}/><br/>
       Содержимое:<br/>
       <HtmlEditor input={vacancy?.data?.body} onChange={(body)=>{setVacancy({...vacancy,data:{...vacancy.data,body}})}}/>
       {
