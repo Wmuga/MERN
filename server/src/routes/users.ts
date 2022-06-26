@@ -19,7 +19,9 @@ const userSchema: Schema = new Schema({
   username: String,
   password: String,
   pfp: Number,
-  level: Number
+  level: Number,
+  vacancies: [{ type: Schema.Types.ObjectId, ref: 'vacancies' }],
+  resumes: [{ type: Schema.Types.ObjectId, ref: 'resumes' }]
 })
 
 const userModel = model('users',userSchema)
@@ -43,9 +45,9 @@ function documentToUser(document:any):userType{
 }
 
 async function get_user(_id:string,callback:(user:userType|undefined)=>any){
-  let res = await userModel.find({_id}).exec()
-  if (res.length){
-    callback(documentToUser(res[0]))
+  let res = await userModel.findById(_id).exec()
+  if (res?._id){
+    callback(documentToUser(res))
     return
   }
   callback(undefined)
@@ -103,11 +105,11 @@ function update_pic(_id:string,filepath:string,callback:(updated:Boolean)=>any){
 }
 
 function get_user_pic(_id:string,callback:(picPath:string)=>any){
-  userModel.find({_id}).then(value=>{
-    if (!value.length){
+  userModel.findById(_id).then(value=>{
+    if (!value?._id){
       callback(path.join(process.cwd(),"public","pfp","nopic.jpg"))
     }
-    callback(path.join(process.cwd(),"public","pfp",value[0].pfp?`${_id}.jpg`:"nopic.jpg"))
+    callback(path.join(process.cwd(),"public","pfp",value?.pfp?`${_id}.jpg`:"nopic.jpg"))
   })
 }
 
@@ -117,7 +119,7 @@ const route_users = async(app:Application)=>{
   //Get user session
   app.get('/session',(req,res)=>{
     //check for header
-    if (!req.headers.authorization){
+    if (!req.headers.authorization || !sessionUserStorage.checkAuth(req.headers.authorization)){
       res.status(403).end()
       return
     }
@@ -127,7 +129,7 @@ const route_users = async(app:Application)=>{
   // Login user
   app.post('/login',bodyParser.json(),(req,res)=>{
     //check for header
-    if (!req.headers.authorization){
+    if (!req.headers.authorization || !sessionUserStorage.checkAuth(req.headers.authorization)){
       res.status(403).end()
       return
     }
@@ -138,7 +140,7 @@ const route_users = async(app:Application)=>{
   })
   app.post('/logout',(req,res)=>{
     //check for header
-    if (!req.headers.authorization){
+    if (!req.headers.authorization || !sessionUserStorage.checkAuth(req.headers.authorization)){
       res.status(403).end()
       return
     }
@@ -148,7 +150,7 @@ const route_users = async(app:Application)=>{
   // Signin user
   app.post('/signin',bodyParser.json(),(req,res)=>{
     //check for header
-    if (!req.headers.authorization){
+    if (!req.headers.authorization || !sessionUserStorage.checkAuth(req.headers.authorization)){
       res.status(403).end()
       return
     }
@@ -160,7 +162,7 @@ const route_users = async(app:Application)=>{
   // User profile
   app.get('/users/:userId',(req,res)=>{
     //check for header
-    if (!req.headers.authorization){
+    if (!req.headers.authorization || !sessionUserStorage.checkAuth(req.headers.authorization)){
       res.status(403).end()
       return
     }

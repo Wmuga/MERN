@@ -21,6 +21,10 @@ class SessionStorage{
     return this.storage[auth]
   }
 
+  checkAuth(auth:string):boolean{
+    return !!this.storage[auth]
+  }
+
   removeUser(auth:string){
     delete this.storage[auth]
   }
