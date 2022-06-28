@@ -1,55 +1,55 @@
 import React, { useContext, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { delete_vacancy, fetch_vacancy } from '../../../API/vacancies'
+import { delete_resume, fetch_resume } from '../../../API/resumes'
 import LoadPlaceholder from '../../../UI/LoadPlaceholder/LoadPlaceholder'
 import { AccessController } from '../../../utils/AccessControllet'
 import { AuthContext } from '../../../utils/Auth'
 
-const Vacancy = () =>{
-  const {vacancyId} = useParams()
+const Resume = () =>{
+  const {resumeId} = useParams()
   const {user} = useContext(AuthContext)
 
-  const [vacancy,setVacancy] = useState({
+  const [resume,setResume] = useState({
     load:true,
     data:{}
   })
 
-  if(vacancy.load){
-    fetch_vacancy(vacancyId,(data)=>{
-      setVacancy({...vacancy,load:false,data})
+  if(resume.load){
+    fetch_resume(resumeId,(data)=>{
+      setResume({...resume,load:false,data})
     })
   }
 
   function deletePost(id){
-    delete_vacancy(id,(status)=>{
+    delete_resume(id,(status)=>{
       if (status===204){
-        window.location.replace('/vacancy')
+        window.location.replace('/resume')
       }
     })
   }
 
 
   return (
-    vacancy.load
+    resume.load
     ? <LoadPlaceholder/>
     : <div>
-      <h2>{vacancy?.data?.title}</h2>
+      <h2>{resume?.data?.title}</h2>
 
       <AccessController accessProvider={()=>user?.level>=2}>
-        <button onClick={()=>{deletePost(vacancy?.data?._id)}}>delete</button>
+        <button onClick={()=>{deletePost(resume?.data?._id)}}>delete</button>
       </AccessController>
       <AccessController accessProvider={()=>  user.level>=1}>
-        <Link to={`/vacancy/${vacancy?.data?._id}/edit`}>
+        <Link to={`/resume/${resume?.data?._id}/edit`}>
           <button>Edit</button>
         </Link>
       </AccessController>
 
       <div>
-        <span>{vacancy?.data?.author?.username}</span>
+        <span>{resume?.data?.author?.username}</span>
       </div>
-      <div dangerouslySetInnerHTML={{__html:vacancy?.data?.body}}></div>
+      <div dangerouslySetInnerHTML={{__html:resume?.data?.body}}></div>
     </div>
   )
 }
 
-export default Vacancy
+export default Resume

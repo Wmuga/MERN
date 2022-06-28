@@ -1,10 +1,4 @@
-export type userType = {
-  userId:string
-  username: string,
-  pfp: Number,
-  level: Number
-} 
-
+import { userType } from "../types/types"
 
 class SessionStorage{
   storage:{[auth:string]:userType}

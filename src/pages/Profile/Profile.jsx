@@ -40,6 +40,7 @@ const Profile = () =>{
   
   if (load.user){
     fetch_user(userId,(value)=>{
+      console.log(value)
       setLoadedUser(value)
       setLoad({...load,user:false})
     })

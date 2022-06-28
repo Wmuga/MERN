@@ -1,14 +1,14 @@
 import React, { useContext, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
-import { edit_vacancy, fetch_vacancy } from '../../../API/vacancies'
+import { edit_resume, fetch_resume } from '../../../API/resumes'
 import HtmlEditor from '../../../UI/HtmlEditor/HtmlEditor'
 import LoadPlaceholder from '../../../UI/LoadPlaceholder/LoadPlaceholder'
 import { AccessControllerRedirect } from '../../../utils/AccessControllet'
 import { AuthContext } from '../../../utils/Auth'
 
-const VacancyEdit = () =>{
-  let {vacancyId} = useParams()
-  const [vacancy,setVacancy] = useState({
+const ResumeEdit = () =>{
+  let {resumeId} = useParams()
+  const [resume,setResume] = useState({
     load:true,
     changed:false,
     data:{}
@@ -16,37 +16,36 @@ const VacancyEdit = () =>{
 
   let {user} = useContext(AuthContext)
   
-  if(vacancy.load){
-    fetch_vacancy(vacancyId,(data)=>{
-      setVacancy({...vacancy,load:false,data})
+  if(resume.load){
+    fetch_resume(resumeId,(data)=>{
+      setResume({...resume,load:false,data})
     })
   }
 
   function change(){
-    edit_vacancy(vacancy.data,(status)=>{
-      if (status===204) setVacancy({...vacancy,changed:true})
+    edit_resume(resume.data,(status)=>{
+      if (status===204) setResume({...resume,changed:true})
       else{
         console.log('Server error')
       }
     })
   }
-
   return (
-    vacancy.load
+    resume.load
     ? <LoadPlaceholder/>
     : <div>
       <AccessControllerRedirect redirect='/' accessProvider={()=>{return user?.level>1}}/>
       Заголовок:<br/>
-      <input name="title" value={vacancy?.data?.title} onChange={(e)=>{setVacancy({...vacancy,data:{...vacancy.data,title:e.target.value}})}}/><br/>
+      <input name="title" value={resume?.data?.title} onChange={(e)=>{setResume({...resume,data:{...resume.data,title:e.target.value}})}}/><br/>
       Содержимое:<br/>
-      <HtmlEditor input={vacancy?.data?.body} onChange={(body)=>{setVacancy({...vacancy,data:{...vacancy.data,body}})}}/>
+      <HtmlEditor input={resume?.data?.body} onChange={(body)=>{setResume({...resume,data:{...resume.data,body}})}}/>
       {
-        vacancy.changed
-        ? <Navigate to='/vacancy'/>
+        resume.changed
+        ? <Navigate to='/resume'/>
         :<button onClick={change}>Изменить</button>
       }
     </div>
   )
 }
 
-export default VacancyEdit
+export default ResumeEdit

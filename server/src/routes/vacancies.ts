@@ -1,42 +1,14 @@
-import {Schema, model} from "mongoose"
 import {Application} from 'express'
 import bodyParser from "body-parser"
-import { sessionUserStorage, userType } from "../utils/session"
+import { sessionUserStorage } from "../utils/session"
+import { documentToVacancy,  userModel,  vacancyModel, vacancyType } from "../types/types"
 
-// mongoose.connect(app_options.db_url)
 
-type vacancyType = {
-  _id:string,
-  title:string,
-  body:string,
-  author:userType
+async function edit_vacancy(_id:string,title:string,body:string,callback:(updated:boolean)=>any){
+  let res = await vacancyModel.updateOne({_id},{title,body}).exec()
+  callback(!!res.modifiedCount)
 }
 
-const vacancyShema: Schema = new Schema({
-  title: String,
-  body: String,
-  author: { type: Schema.Types.ObjectId, ref: 'users' }
-})
-
-const vacancyModel = model('vacancies',vacancyShema)
-
-function documentToUser(document:any):userType{
-  return {
-    userId:document._id,
-    username:document.username,
-    pfp:document.pfp,
-    level:document.level,
-  }
-}
-
-function documentToVacancy(document:any):vacancyType{
-  return {
-    _id:document._id,
-    title:document.title,
-    body:document.body,
-    author:documentToUser(document.author)
-  }
-}
 
 async function get_vacancy(_id:string,callback:(user:vacancyType|undefined)=>any){
   let res = await vacancyModel.findById(_id).populate('author').exec()
@@ -50,7 +22,7 @@ async function get_vacancy(_id:string,callback:(user:vacancyType|undefined)=>any
 async function find_vacancy(body:string,limit:number,page:number,callback:(vacancies:vacancyType[]|[])=>any){
   let skip = limit*(page-1)
   let res = skip>0 
-  ? await vacancyModel.find({body:new RegExp(`${body}`,'i')}).populate('author').exec()
+  ? await vacancyModel.find({body:new RegExp(`${body}`,'i')},null,{limit:100}).populate('author').exec()
   : await vacancyModel.find({body:new RegExp(`${body}`,'i')},null,{skip,limit}).populate('author').exec()
   if (res.length){
     callback(res.map(e=>documentToVacancy(e)))
@@ -72,7 +44,12 @@ async function create_vacancy(title:string,body:string,authorId:string,callback:
     author:authorId
   })
 
+  
   await newVacancy.save()
+  
+  let author = await userModel.findById({_id:authorId}).exec()
+  author?.vacancies?.push(newVacancy)
+  await author?.save()
 
   callback(true)
 }
@@ -101,8 +78,8 @@ const route_vacancies = async(app:Application)=>{
     page = page>0 ? page : 1
 
 
-    find_vacancy(query,max,page,(user)=>{
-      res.end(JSON.stringify(user))
+    find_vacancy(query,max,page,(vacancies)=>{
+      res.end(JSON.stringify(vacancies))
     })
   })
    // Vacancies count
@@ -126,7 +103,7 @@ const route_vacancies = async(app:Application)=>{
     })
   })
   // Edit
-  app.put('/vacancies/:vacancyId',(req,res)=>{
+  app.put('/vacancies/:vacancyId',bodyParser.json(),(req,res)=>{
 
     let {vacancyId} = req.params
     if (vacancyId.length<12) {
@@ -138,9 +115,12 @@ const route_vacancies = async(app:Application)=>{
       res.status(403).end()
       return
     }
-    
-    get_vacancy(vacancyId,(user)=>{
-      res.end(JSON.stringify(user))
+
+    const title = req.body?.title
+    const body = req.body?.body
+
+    edit_vacancy(vacancyId,title,body,(edited)=>{
+      res.status(edited?204:500).end()
     })
   })
 
@@ -179,16 +159,3 @@ const route_vacancies = async(app:Application)=>{
 
 
 export default route_vacancies
-
-
-
-// function test(){
-//   const testUser = new vacancyModel({
-//     username:'admin',
-//     password:hash('admin'),
-//     pfp:0,
-//     level:3
-//   })
-  
-//   testUser.save()
-// }

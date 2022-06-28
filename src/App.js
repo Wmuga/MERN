@@ -8,10 +8,13 @@ import Signin from './pages/Signin/Signin';
 import Logout from './pages/Logout';
 import {Auth, AuthContext, AuthContextProvider} from './utils/Auth';
 import Vacancies from './pages/Vacancies/List/Vacancies';
-import Resumes from './pages/Resumes/Resumes';
 import VacancyEdit from './pages/Vacancies/Edit/VacancyEdit';
 import Vacancy from './pages/Vacancies/Vacancy/Vacancy';
 import VacancyCreate from './pages/Vacancies/Create/VacancyCreate';
+import Resumes from './pages/Resumes/List/Resumes';
+import Resume from './pages/Resumes/Resume/Resume';
+import ResumeCreate from './pages/Resumes/Create/ResumeCreate';
+import ResumeEdit from './pages/Resumes/Edit/ResumeEdit';
 
 function App() {
   return (
@@ -60,6 +63,9 @@ function App() {
             <Route path="/vacancy/create" element={<VacancyCreate/>} />
             <Route path="/vacancy/:vacancyId/edit" element={<VacancyEdit/>} />
             <Route path="/resume" element={<Resumes/>} />
+            <Route path="/resume/:resumeId" element={<Resume/>} />
+            <Route path="/resume/create" element={<ResumeCreate/>} />
+            <Route path="/resume/:resumeId/edit" element={<ResumeEdit/>} />
           </Routes>
           </main>
         </div>

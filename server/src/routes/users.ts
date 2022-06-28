@@ -1,27 +1,16 @@
-import {Schema, model} from "mongoose"
 import app_options from '../app_options.json'
 import {createHmac} from "crypto"
 import {Application} from 'express'
-import { sessionUserStorage, userType } from "../utils/session"
+import { sessionUserStorage } from "../utils/session"
 import bodyParser from "body-parser"
 import multer from "multer"
 import sharp from 'sharp'
 import path from 'path'
 import fs from 'fs'
+import { documentToUser, documentToUserProfile, userModel, userProfileType, userType } from "../types/types"
 //Папка загрузки
 const upload = multer({dest:"tmp/"})
 
-
-const userSchema: Schema = new Schema({
-  username: String,
-  password: String,
-  pfp: Number,
-  level: Number,
-  vacancies: [{ type: Schema.Types.ObjectId, ref: 'vacancies' }],
-  resumes: [{ type: Schema.Types.ObjectId, ref: 'resumes' }]
-})
-
-const userModel = model('users',userSchema)
 
 //Функция хэширования. Двухэиапное хеширование sha256 с солью
 function hash(str:string){
@@ -32,19 +21,11 @@ function hash(str:string){
   return r2.digest('hex')
 } 
 
-function documentToUser(document:any):userType{
-  return {
-    userId:document._id,
-    username:document.username,
-    pfp:document.pfp,
-    level:document.level
-  }
-}
 
-async function get_user(_id:string,callback:(user:userType|undefined)=>any){
-  let res = await userModel.findById(_id).exec()
+async function get_user(_id:string,callback:(user:userProfileType|undefined)=>any){
+  let res = await userModel.findById(_id).populate('resumes').populate('vacancies').exec()
   if (res?._id){
-    callback(documentToUser(res))
+    callback(documentToUserProfile(res))
     return
   }
   callback(undefined)
@@ -110,7 +91,23 @@ function get_user_pic(_id:string,callback:(picPath:string)=>any){
   })
 }
 
+async function getUsers(limit:number,page:number,callback:(vacancies:userType[]|[])=>any){
+  let skip = limit*(page-1)
+  let res = skip>0 
+  ? await userModel.find({},null,{limit:100}).populate('author').exec()
+  : await userModel.find({},null,{skip,limit}).populate('author').exec()
+  if (res.length){
+    callback(res.map(e=>documentToUser(e)))
+    return
+  }
+  callback([])
+}
 
+function count_users(callback:(count:Number)=>any){
+  userModel.count({},function(_,count){
+    callback(count)
+  })
+}
 
 const route_users = async(app:Application)=>{
   //Get user session
@@ -212,7 +209,7 @@ const route_users = async(app:Application)=>{
     })
     
   })
-
+  //Profile picure
   app.get('/users/:userId/pfp',(req,res)=>{
     let {userId} = req.params
     if (userId.length<12) {
@@ -223,20 +220,29 @@ const route_users = async(app:Application)=>{
       res.sendFile(pic)
     })
   })
+
+  // Vacancies
+  app.get('/users/',(req,res)=>{
+
+    let max = Number(req.query["_limit"])
+    let page = Number(req.query["_page"])
+
+    max = max>0 ? max : 0
+    page = page>0 ? page : 1
+
+
+    getUsers(max,page,(users)=>{
+      res.end(JSON.stringify(users))
+    })
+  })
+   // Vacancies count
+   app.get('/users/count',(req,res)=>{
+
+    count_users((count)=>{
+      res.end(count.toString())
+    })
+  })
 }
 
 
 export default route_users
-
-
-
-function test(){
-  const testUser = new userModel({
-    username:'admin',
-    password:hash('admin'),
-    pfp:0,
-    level:3
-  })
-  
-  testUser.save()
-}
