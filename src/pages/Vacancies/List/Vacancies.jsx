@@ -47,7 +47,6 @@ const Vacancies = () =>{
   if(loads.cur_page){
     fetch_vacancies_page(pages.cur_page,page_size,(page)=>{
       setPage(page)
-      console.log(page)
       setLoads({...loads,cur_page:false})
     })
   }

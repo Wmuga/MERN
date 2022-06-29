@@ -15,6 +15,7 @@ import Resumes from './pages/Resumes/List/Resumes';
 import Resume from './pages/Resumes/Resume/Resume';
 import ResumeCreate from './pages/Resumes/Create/ResumeCreate';
 import ResumeEdit from './pages/Resumes/Edit/ResumeEdit';
+import UserList from './pages/UserList/UserList';
 
 function App() {
   return (
@@ -31,10 +32,13 @@ function App() {
               <Link className='header_href_deco' to="/vacancy">Вакансии</Link>
               <Link className='header_href_deco' to="/resume">Резюме</Link>
               <AuthContext.Consumer>
-                {({user})=>{
-                  if (user?.level===2) return (<Link className='header_href_deco' to="/resume">Пользователи</Link>)  
-                }
-                }
+                {
+                  ({user})=>{
+                    return user?.level>=2
+                    ? <Link className='header_href_deco' to="/users">Пользователи</Link>
+                    : null
+                  }
+                }              
               </AuthContext.Consumer>
 
               <AuthContext.Consumer>
@@ -54,6 +58,7 @@ function App() {
           <main>
           <Routes>
             <Route index element={<Main/>}/>
+            <Route path="/users/" element={<UserList/>} />
             <Route path="/profile/:userId" element={<Profile/>} />
             <Route path="/login" element={<Login/>} />
             <Route path="/signin" element={<Signin/>} />

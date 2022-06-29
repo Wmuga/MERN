@@ -47,7 +47,6 @@ const Resumes = () =>{
   if(loads.cur_page){
     fetch_resumes_page(pages.cur_page,page_size,(page)=>{
       setPage(page)
-      console.log(page)
       setLoads({...loads,cur_page:false})
     })
   }

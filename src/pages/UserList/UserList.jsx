@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { fetch_users_page, fetch_users_pages_count } from '../../../API/users'
-import ListButtons from '../../../UI/ListButtons/ListButtons'
-import LoadPlaceholder from '../../../UI/LoadPlaceholder/LoadPlaceholder'
-import { AuthContext } from '../../../utils/Auth'
+import { fetch_users_page, fetch_users_pages_count } from '../../API/users'
+import ListButtons from '../../UI/ListButtons/ListButtons'
+import LoadPlaceholder from '../../UI/LoadPlaceholder/LoadPlaceholder'
+import { AuthContext } from '../../utils/Auth'
 import { AccessControllerRedirect } from '../../utils/AccessControllet'
 
 const page_size = 10
@@ -39,7 +39,6 @@ const UserList = () =>{
   if(loads.cur_page){
     fetch_users_page(pages.cur_page,page_size,(page)=>{
       setPage(page)
-      console.log(page)
       setLoads({...loads,cur_page:false})
     })
   }
@@ -57,7 +56,7 @@ const UserList = () =>{
           ? <LoadPlaceholder/>
           : users.map((value,index)=>{
             return <div key={value._id}>
-              <Link style={{textDecoration:'none', color:'black'}} to={`/user/${value._id}`}>
+              <Link style={{textDecoration:'none', color:'black'}} to={`/profile/${value.userId}`}>
                 <h3>{index+(pages.cur_page-1)*page_size+1}. {value.username}</h3>
               </Link>
             </div>

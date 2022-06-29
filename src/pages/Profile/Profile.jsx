@@ -1,5 +1,5 @@
 import React, { useContext,  useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { fetch_user, update_pfp } from '../../API/users'
 import LoadPlaceholder from '../../UI/LoadPlaceholder/LoadPlaceholder'
 import LabeledInput from '../../UI/LabeledInput/LabeledInput'
@@ -40,7 +40,6 @@ const Profile = () =>{
   
   if (load.user){
     fetch_user(userId,(value)=>{
-      console.log(value)
       setLoadedUser(value)
       setLoad({...load,user:false})
     })
@@ -65,13 +64,34 @@ const Profile = () =>{
         </form>
 
       </div>
-      <span id="level">Пользователь</span>
-      {/* Логика на рендер вакансий и резюме */}
+      <span id="level">{
+        loadedUser.level? loadedUser.level===1 ? 'Модератор' : 'Администратор' : 'Пользователь'
+      }</span>
+
      
       {
         !load.userItems 
         ? <LoadPlaceholder/>
-        : <h2>Хуйня</h2>
+        : <div id='items'>
+          {
+            loadedUser?.vacancies?.map((value,index)=>
+              <div key={value._id} className='vacancy'>
+                <Link style={{textDecoration:'none', color:'black'}} to={`/vacancy/${value._id}`}>
+                <h3>Вакансия {index+1}. {value.title}</h3>
+                </Link>
+              </div>
+            )
+          }
+          {
+            loadedUser?.resumes?.map((value,index)=>
+            <div key={value._id} className='vacancy'>
+              <Link style={{textDecoration:'none', color:'black'}} to={`/vacancy/${value._id}`}>
+              <h3>Резюме {index+1}. {value.title}</h3>
+              </Link>
+            </div>
+          )
+          }
+          </div>
       }
 
     </div>

@@ -94,8 +94,8 @@ function get_user_pic(_id:string,callback:(picPath:string)=>any){
 async function getUsers(limit:number,page:number,callback:(vacancies:userType[]|[])=>any){
   let skip = limit*(page-1)
   let res = skip>0 
-  ? await userModel.find({},null,{limit:100}).populate('author').exec()
-  : await userModel.find({},null,{skip,limit}).populate('author').exec()
+  ? await userModel.find({},null,{limit:100}).exec()
+  : await userModel.find({},null,{skip,limit}).exec()
   if (res.length){
     callback(res.map(e=>documentToUser(e)))
     return
@@ -150,6 +150,18 @@ const route_users = async(app:Application)=>{
     create_user(req.body.login,req.body.password,(user)=>{
       if (typeof(user)!='undefined') sessionUserStorage.addUser(req.headers!.authorization!.toString(),<userType>user)
       res.end(JSON.stringify(user??{}))
+    })
+  })
+   // Users count
+   app.get('/users/count',(req,res)=>{
+
+    if (!req.headers.authorization || !sessionUserStorage.checkAuth(req.headers.authorization)){
+      res.status(403).end()
+      return
+    }
+
+    count_users((count)=>{
+      res.end(count.toString())
     })
   })
   // User profile
@@ -216,13 +228,14 @@ const route_users = async(app:Application)=>{
       res.status(404).end()
       return
     }
+    
     get_user_pic(userId,(pic)=>{
       res.sendFile(pic)
     })
   })
 
-  // Vacancies
-  app.get('/users/',(req,res)=>{
+  // Users
+  app.get('/users',(req,res)=>{
 
     let max = Number(req.query["_limit"])
     let page = Number(req.query["_page"])
@@ -230,16 +243,14 @@ const route_users = async(app:Application)=>{
     max = max>0 ? max : 0
     page = page>0 ? page : 1
 
+    if (!req.headers.authorization || !sessionUserStorage.checkAuth(req.headers.authorization)){
+      res.status(403).end()
+      return
+    }
+
 
     getUsers(max,page,(users)=>{
       res.end(JSON.stringify(users))
-    })
-  })
-   // Vacancies count
-   app.get('/users/count',(req,res)=>{
-
-    count_users((count)=>{
-      res.end(count.toString())
     })
   })
 }
