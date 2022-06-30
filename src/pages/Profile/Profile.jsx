@@ -3,10 +3,11 @@ import { Link, useParams } from 'react-router-dom'
 import { fetch_user, update_pfp } from '../../API/users'
 import LoadPlaceholder from '../../UI/LoadPlaceholder/LoadPlaceholder'
 import LabeledInput from '../../UI/LabeledInput/LabeledInput'
-import {AccessControllerRedirect} from '../../utils/AccessControllet'
+import {AccessController, AccessControllerRedirect} from '../../utils/AccessControllet'
 import { AuthContext } from '../../utils/Auth'
 import options from "../../app_options.json"
 import { randstr } from '../../utils/utils'
+import cl from './Profile.module.css'
 
 const Profile = () =>{
   const {userId} = useParams()
@@ -48,27 +49,31 @@ const Profile = () =>{
   return load.user
   ? (<LoadPlaceholder/>) 
   : Object.keys(loadedUser).length ?(
-    <div>
+    <div className={cl.Profile}>
       <AccessControllerRedirect redirect='/login' accessProvider={()=>{
         return user.userId===userId||user.level>1
       }}/>
       <h2>Профиль</h2>
-      <span id="nick">{loadedUser.username}</span>
-      <div id="profilePic">
-        {/* Как обновлять картинку после отправки */}
-        <img src={`${options.APIserver}/users/${loadedUser.userId}/pfp?${randombullshit}`} alt="User profile" /><br/>
+      
+      <div className={cl.Data}>
+        <span className={cl.nick}>{loadedUser.username}</span>
 
+        <span id="level">{
+          loadedUser.level? loadedUser.level===1 ? 'Модератор' : 'Администратор' : 'Пользователь'
+        }</span>
+
+        <img className={cl.ProfilePic} src={`${options.APIserver}/users/${loadedUser.userId}/pfp?${randombullshit}`} alt="User profile" /><br/>
+      </div>
+      
+      <div className={cl.changeProfilePic}>
         <form action="" onSubmit={sendPfp}>
-          <LabeledInput type="file" id="img" name="img" descr="Фото профиля" accept="image/png, image/jpeg" onChange={changePfp}/>
-          <input type="submit" name="updatePic" value="Обновить фото профиля" />
+          <AccessController accessProvider={()=>user.userId===loadedUser.userId}>
+            <LabeledInput type="file" id="img" name="img" descr="Фото профиля" accept="image/png, image/jpeg" onChange={changePfp}/>
+            <input type="submit" name="updatePic" value="Обновить фото профиля" />
+          </AccessController>
         </form>
 
-      </div>
-      <span id="level">{
-        loadedUser.level? loadedUser.level===1 ? 'Модератор' : 'Администратор' : 'Пользователь'
-      }</span>
-
-     
+      </div>     
       {
         !load.userItems 
         ? <LoadPlaceholder/>

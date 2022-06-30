@@ -5,6 +5,7 @@ import ListButtons from '../../UI/ListButtons/ListButtons'
 import LoadPlaceholder from '../../UI/LoadPlaceholder/LoadPlaceholder'
 import { AuthContext } from '../../utils/Auth'
 import { AccessControllerRedirect } from '../../utils/AccessControllet'
+import cl from './UserList.module.css'
 
 const page_size = 10
 const max_buttons_display = 10
@@ -49,13 +50,13 @@ const UserList = () =>{
     ? <LoadPlaceholder/>
     : !pages.total_pages?
     <h2>По версии сервера тут пусто</h2>
-    : <div className='Users'>
+    : <div className={cl.ItemList}>
         <AccessControllerRedirect redirect='/' accessProvider={()=>user.level>=2}/>
         {
           loads.cur_page
           ? <LoadPlaceholder/>
           : users.map((value,index)=>{
-            return <div key={value._id}>
+            return <div key={value._id} className={cl.Item}>
               <Link style={{textDecoration:'none', color:'black'}} to={`/profile/${value.userId}`}>
                 <h3>{index+(pages.cur_page-1)*page_size+1}. {value.username}</h3>
               </Link>

@@ -5,6 +5,7 @@ import ListButtons from '../../../UI/ListButtons/ListButtons'
 import LoadPlaceholder from '../../../UI/LoadPlaceholder/LoadPlaceholder'
 import { AccessController } from '../../../utils/AccessControllet'
 import { AuthContext } from '../../../utils/Auth'
+import cl from './Vacancies.module.css'
 
 const page_size = 10
 const max_buttons_display = 10
@@ -51,29 +52,33 @@ const Vacancies = () =>{
     })
   }
   
+  const tagRegex = /<\/?.+?>/g
 
   return (
     loads.pages_count
     ? <LoadPlaceholder/>
     : !pages.total_pages?
     <h2>По версии сервера тут пусто</h2>
-    : <div className='Vacancies'>
+    : <div className={cl.ItemList}>
         {
           loads.cur_page
           ? <LoadPlaceholder/>
           : vacancies.map((value,index)=>{
-            return <div key={value._id}>
+            return <div key={value._id} className={cl.Vacancy}>
               <Link style={{textDecoration:'none', color:'black'}} to={`/vacancy/${value._id}`}>
-              <h3>{index+(pages.cur_page-1)*page_size+1}. {value.title}</h3>
+                <h3>{index+(pages.cur_page-1)*page_size+1}. {value.title}</h3>
+                <p>{value.body.substring(0,50).split(tagRegex).join('')}...</p>
               </Link>
-              <AccessController accessProvider={()=>user.level>=2}>
-                <button onClick={()=>{deletePost(value._id)}}>delete</button>
-              </AccessController>
-              <AccessController accessProvider={()=>  user.level>=1}>
-                <Link to={`/vacancy/${value._id}/edit`}>
-                  <button>Edit</button>
-                </Link>
-              </AccessController>
+              <div className={cl.Item}>
+                <AccessController accessProvider={()=>user.level>=2}>
+                  <button onClick={()=>{deletePost(value._id)}}>delete</button>
+                </AccessController>
+                <AccessController accessProvider={()=>  user.level>=1}>
+                  <Link to={`/vacancy/${value._id}/edit`}>
+                    <button>Edit</button>
+                  </Link>
+                </AccessController>
+              </div>
             </div>
           })
         }

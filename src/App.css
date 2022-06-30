@@ -4,7 +4,7 @@
   --white: #f6efef;
   --red: #881414;
   --green: #3ee24b;
-  --light-blue: #2ebdddce;
+  --light-blue: #2ebddd6c;
   --blue: #1b48c4ce;
 
   --header-background-color: var(--grey);
@@ -12,6 +12,8 @@
   --button-like-background-color: var(--blue);
   --load-circle-color: var(--blue);
   --drop-down-color: var(--light-grey);
+  --border-color: var(--light-grey);
+  --background: var(--light-blue);
 }
 
 .App-header{
